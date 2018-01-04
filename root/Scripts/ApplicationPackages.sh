@@ -1,5 +1,10 @@
 #!/bin/bash
 
+################################
+#Pacaur application Installer  #
+#Written By LBlaze             #
+################################
+
 source /root/Data/settings.sh
 
 packagesToInstall=""

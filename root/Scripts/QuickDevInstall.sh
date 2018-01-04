@@ -1,9 +1,9 @@
 #!/bin/bash
 
-################################
-#NightFury OS Install Script   #
-#Written By LBlaze             #
-################################
+###########################
+#NFOS Install Script      #
+#Written By LBlaze        #
+###########################
 
 #TODO Support Other Keyboard Layouts
 #TODO Better Lang Selector

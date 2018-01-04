@@ -1,6 +1,6 @@
 #!/bin/bash
 
-##PreSetup
+## Pre-Setup ##
 
 source /settings.sh
 
@@ -12,23 +12,23 @@ pacman -S expac yajl git base-devel --needed --noconfirm
 sudo -u $username gpg --recv-keys --keyserver hkp://pgp.mit.edu 1EB2638FF56C0C53
 sudo -u $username gpg --recv-keys --keyserver hkp://pgp.mit.edu 1EB2638FF56C0C53
 
-##Download And Ready Files
+## Download And Ready Files ##
 sudo -u $username curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/cower.tar.gz
 sudo -u $username curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/pacaur.tar.gz
 sudo -u $username tar -xvf cower.tar.gz
 sudo -u $username tar -xvf pacaur.tar.gz
 
 
-##Install Cower
+## Install Cower ##
 cd cower
 sudo -u $username makepkg
 pacman -U *.pkg.tar.xz --noconfirm
 
-##Install Pacaur
+## Install Pacaur ##
 cd ../pacaur
 sudo -u $username makepkg
 pacman -U *.pkg.tar.xz --noconfirm
 
-##Cleanup
+## Cleanup ##
 cd ../..
 rm -Rf PacaurSetup

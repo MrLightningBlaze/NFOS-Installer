@@ -1,5 +1,10 @@
 #!/bin/bash
 
+################################
+#NFOS Installer OpenRC Patch   #
+#Written By LBlaze             #
+################################
+
 source /root/Data/settings.sh
 
 ## Prepare the repositories ##
@@ -49,7 +54,6 @@ arch-chroot $mountpoint pacman -S $openRCServicePackages --needed --noconfirm
 for daemon in $openRCServices; do arch-chroot $mountpoint rc-update add $daemon default; done
 arch-chroot $mountpoint rc-update add udev boot
 arch-chroot $mountpoint rc-update add elogind boot
-arch-chroot $mountpoint rc-update add dbus default
 
 
 ## Remove more systemd cruft ##
