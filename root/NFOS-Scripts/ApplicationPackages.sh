@@ -5,7 +5,7 @@
 #Written By LBlaze             #
 ################################
 
-source /root/Data/settings.sh
+source /NFOS-Data/settings.sh
 
 packagesToInstall=""
 

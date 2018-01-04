@@ -2,7 +2,7 @@
 
 ## Pre-Setup ##
 
-source /settings.sh
+source /NFOS-Data/settings.sh
 
 mkdir PacaurSetup
 chmod -R 777 /PacaurSetup

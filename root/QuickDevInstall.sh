@@ -151,13 +151,6 @@ echo "Include = /etc/pacman.d/mirrorlist" >> $mountpoint/etc/pacman.conf
 arch-chroot $mountpoint pacman -Syy --noconfirm
 clear
 
-cp /root/Data/settings.sh $mountpoint/settings.sh
-
-##Pacaur Installation##
-cp /root/Scripts/pacaurInstall.sh $mountpoint/pacaurInstall.sh
-arch-chroot $mountpoint /pacaurInstall.sh
-rm $mountpoint/pacaurInstall.sh
-
 ##Final User Config##
 read -n 1 -s -r -p "Note: User interaction required. Press any key to continue" #Ask User For Passwords
 echo
@@ -166,12 +159,25 @@ arch-chroot $mountpoint passwd
 echo "You will now be asked for the password for \"$username\""
 arch-chroot $mountpoint passwd "$username"
 
-##User Software Installation##
-#cp /root/Scripts/ApplicationPackages.sh $mountpoint/ApplicationPackages.sh
-#YesNo "Do you wish to install one of the Custom Application Packages (Gaming/Office/Developing/Etc)? [y/N]" "arch-chroot $mountpoint /ApplicationPackages.sh" ""
-#rm $mountpoint/ApplicationPackages.sh
-##Cleanup## #Give sudo permission to 'wheel'
-#umount "$bootDrive" #Unmount Boot Drive
-#umount "$rootDrive" #Unmount Root Drive
+## Run post-Install Scripts ##
+#Copy Scripts
+mkdir "$mountpoint"/NFOS-Data
+mkdir "$mountpoint"/NFOS-Scripts
+cp /root/Data/settings.sh "$mountpoint"/NFOS-Data/settings.sh
+cp -r /root/NFOS-Scripts/* "$mountpoint"/NFOS-Scripts/
+
+#Install Pacaur
+arch-chroot "$mountpoint" /NFOS-Scripts/pacaurInstall.sh
+rm "$mountpoint"/NFOS-Scripts/pacaurInstall.sh
+
+#Run Application Package Installer
+#YesNo "Do you wish to install one of the Custom Application Packages (Gaming/Office/Developing/Etc)? [y/N]" "arch-chroot $mountpoint /NFOS-Scripts/ApplicationPackages.sh" ""
+rm "$mountpoint"/NFOS-Scripts/ApplicationPackages.sh
+
+YesNo "Do you wish to replace Systemd with OpenRC? [y/N]" "arch-chroot $mountpoint /NFOS-Scripts/OpenRCPatch.sh" ""
+rm "$mountpoint"/NFOS-Scripts/OpenRCPatch.sh
+
+
+##Cleanup##
 sync #Sync data to disks
-#reboot
+

@@ -5,7 +5,7 @@
 #Written By LBlaze             #
 ################################
 
-source /root/Data/settings.sh
+source /NFOS-Data/settings.sh
 
 ## Prepare the repositories ##
 cp /root/Data/Configs/pacman.conf $mountpoint/etc/pacman.conf

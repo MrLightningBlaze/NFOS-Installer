@@ -210,53 +210,63 @@ mkdir "$mountpoint"/boot #Create Boot Mountpoint
 mount "$bootDrive" "$mountpoint"/boot #Mount Boot Partition
 pacstrap "$mountpoint" base base-devel #Install Core System
 genfstab -U "$mountpoint" >> "$mountpoint"/etc/fstab #Generate the fstab
-echo "LANG=$langfile" >> $mountpoint/etc/locale.conf
-echo "$hostname" >> $mountpoint/etc/hostname #Set The Hostname
+echo "LANG=$langfile" >> "$mountpoint"/etc/locale.conf
+echo "$hostname" >> "$mountpoint"/etc/hostname #Set The Hostname
 
 
 ##Chroot Setup##
-arch-chroot $mountpoint ln -sf /usr/share/zoneinfo/"$timezone" /etc/localtime #Set the timezone
-arch-chroot $mountpoint hwclock --systohc #Set the hardware clock to UTC
-arch-chroot $mountpoint locale-gen #Generate Locales
-arch-chroot $mountpoint pacman -S $coreStuff $networkStuff $xorgDesktop $defaultApps --noconfirm
+arch-chroot "$mountpoint" ln -sf /usr/share/zoneinfo/"$timezone" /etc/localtime #Set the timezone
+arch-chroot "$mountpoint" hwclock --systohc #Set the hardware clock to UTC
+arch-chroot "$mountpoint" locale-gen #Generate Locales
+arch-chroot "$mountpoint" pacman -S "$coreStuff" "$networkStuff" "$xorgDesktop" "$defaultApps" --noconfirm
 
 if [ -d /sys/firmware/efi ]
 then
-    arch-chroot $mountpoint grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub #Install Grub to System
+    arch-chroot "$mountpoint" grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub #Install Grub to System
 else
-    arch-chroot $mountpoint grub-install --target=i386-pc ${bootDrive::-1}
+    arch-chroot "$mountpoint" grub-install --target=i386-pc ${bootDrive::-1}
 fi
 
-arch-chroot $mountpoint grub-mkconfig -o /boot/grub/grub.cfg #Configure Grub
-arch-chroot $mountpoint useradd -m -G wheel -s /bin/bash "$username" #Create User
-arch-chroot $mountpoint systemctl enable dhcpcd
-arch-chroot $mountpoint systemctl enable lxdm
-echo "%wheel ALL=(ALL) ALL" >> $mountpoint/etc/sudoers
-echo "%root ALL=(ALL:ALL) ALL" >> $mountpoint/etc/sudoers
-echo "[multilib]" >> $mountpoint/etc/pacman.conf
-echo "Include = /etc/pacman.d/mirrorlist" >> $mountpoint/etc/pacman.conf
-arch-chroot $mountpoint pacman -Syy --noconfirm
+arch-chroot "$mountpoint" grub-mkconfig -o /boot/grub/grub.cfg #Configure Grub
+arch-chroot "$mountpoint" useradd -m -G wheel -s /bin/bash "$username" #Create User
+arch-chroot "$mountpoint" systemctl enable dhcpcd
+arch-chroot "$mountpoint" systemctl enable lxdm
+echo "%wheel ALL=(ALL) ALL" >> "$mountpoint"/etc/sudoers
+echo "%root ALL=(ALL:ALL) ALL" >> "$mountpoint"/etc/sudoers
+echo "[multilib]" >> "$mountpoint"/etc/pacman.conf
+echo "Include = /etc/pacman.d/mirrorlist" >> "$mountpoint"/etc/pacman.conf
+arch-chroot "$mountpoint" pacman -Syy --noconfirm
 clear
 
-##Pacaur Installation##
-cp /root/Scripts/pacaurInstall.sh $mountpoint/pacaurInstall.sh
-cp /root/Data/settings.sh $mountpoint/settings.sh
-arch-chroot $mountpoint /pacaurInstall.sh
-rm $mountpoint/pacaurInstall.sh
 
 ##Final User Config##
 read -n 1 -s -r -p "Note: User interaction required. Press any key to continue" #Ask User For Passwords
 echo
 echo "You will now be asked for the password for \"root\""
-arch-chroot $mountpoint passwd
+arch-chroot "$mountpoint" passwd
 echo "You will now be asked for the password for \"$username\""
-arch-chroot $mountpoint passwd "$username"
+arch-chroot "$mountpoint" passwd "$username"
 
-##User Software Installation##
-cp /root/Scripts/ApplicationPackages.sh $mountpoint/ApplicationPackages.sh
-YesNo "Do you wish to install one of the Custom Application Packages (Gaming/Office/Developing/Etc)? [y/N]" "arch-chroot $mountpoint /ApplicationPackages.sh" ""
-rm $mountpoint/ApplicationPackages.sh
-##Cleanup## #Give sudo permission to 'wheel'
+## Run post-Install Scripts ##
+#Copy Scripts
+mkdir "$mountpoint"/NFOS-Data
+mkdir "$mountpoint"/NFOS-Scripts
+cp /root/Data/settings.sh "$mountpoint"/NFOS-Data/settings.sh
+cp -r /root/NFOS-Scripts/* "$mountpoint"/NFOS-Scripts/
+
+#Install Pacaur
+arch-chroot "$mountpoint" /NFOS-Scripts/pacaurInstall.sh
+rm "$mountpoint"/NFOS-Scripts/pacaurInstall.sh
+
+#Run Application Package Installer
+YesNo "Do you wish to install one of the Custom Application Packages (Gaming/Office/Developing/Etc)? [y/N]" "arch-chroot $mountpoint /NFOS-Scripts/ApplicationPackages.sh" ""
+rm "$mountpoint"/NFOS-Scripts/ApplicationPackages.sh
+
+YesNo "Do you wish to replace Systemd with OpenRC? [y/N]" "arch-chroot $mountpoint /NFOS-Scripts/OpenRCPatch.sh" ""
+rm "$mountpoint"/NFOS-Scripts/OpenRCPatch.sh
+
+
+##Cleanup## 
 umount "$bootDrive" #Unmount Boot Drive
 umount "$rootDrive" #Unmount Root Drive
 sync #Sync data to disks
