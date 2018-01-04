@@ -253,6 +253,7 @@ mkdir "$mountpoint"/NFOS-Data
 mkdir "$mountpoint"/NFOS-Scripts
 cp /root/Data/settings.sh "$mountpoint"/NFOS-Data/settings.sh
 cp -r /root/NFOS-Scripts/* "$mountpoint"/NFOS-Scripts/
+cp /root/Data/Configs/* "$mountpoint"/NFOS-Data/
 
 #Install Pacaur
 arch-chroot "$mountpoint" /NFOS-Scripts/pacaurInstall.sh

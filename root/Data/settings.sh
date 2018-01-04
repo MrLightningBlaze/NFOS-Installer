@@ -6,20 +6,20 @@
 #####################
 
 ##Username and Hostname Data
-username=""
-hostname=""
+username="user"
+hostname="host"
 
 ##Basic Settings
 EDITOR="nano"
 export EDITOR="nano"
 langfile="en_US.UTF-8"
-timezone="UTC"
+timezone="GMT"
 
 ##Drive Settings
 mountpoint="/mnt"
-drive=
-bootDrive=
-rootDrive=
+drive=""
+bootDrive=""
+rootDrive=""
 
 ##Application Packages
 coreStuff="grub efibootmgr sudo"
@@ -33,6 +33,10 @@ officePackage="libreoffice thunderbird"
 openRCPackages="base base-devel openrc-system grub linux-lts linux-lts-headers systemd-dummy libsystemd-dummy openrc-world openrc netifrc mkinitcpio"
 openRCServicePackages="acpid-openrc alsa-utils-openrc autofs-openrc displaymanager-openrc fuse-openrc haveged-openrc hdparm-openrc syslog-ng-openrc"
 openRCServices="acpid alsasound autofs xdm fuse haveged hdparm syslog-ng dbus"
+
+## Automated Install Stuff ##
+AppPackages=false
+OpenRC=false
 
 ## Post-Install Added Settings ##
 

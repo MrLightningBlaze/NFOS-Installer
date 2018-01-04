@@ -106,12 +106,6 @@ function ManualPartInstall #Manually Choose Paritions
 
 dhcpcd
 FullDriveInstall
-username="testing"
-hostname="NFOS-TestBuild"
-timezone="GMT"
-echo "username=$username" >> /root/Data/settings.sh
-echo "hostname=$hostname" >> /root/Data/settings.sh
-echo "timezone=$timezone" >> /root/Data/settings.sh
 clear
 
 ##Main Install##
@@ -171,10 +165,15 @@ arch-chroot "$mountpoint" /NFOS-Scripts/pacaurInstall.sh
 rm "$mountpoint"/NFOS-Scripts/pacaurInstall.sh
 
 #Run Application Package Installer
-#YesNo "Do you wish to install one of the Custom Application Packages (Gaming/Office/Developing/Etc)? [y/N]" "arch-chroot $mountpoint /NFOS-Scripts/ApplicationPackages.sh" ""
+if $AppPackages; then
+    arch-chroot $mountpoint /NFOS-Scripts/ApplicationPackages.sh
+fi
 rm "$mountpoint"/NFOS-Scripts/ApplicationPackages.sh
 
-YesNo "Do you wish to replace Systemd with OpenRC? [y/N]" "arch-chroot $mountpoint /NFOS-Scripts/OpenRCPatch.sh" ""
+
+if $OpenRC; then
+    arch-chroot $mountpoint /NFOS-Scripts/OpenRCPatch.sh
+fi
 rm "$mountpoint"/NFOS-Scripts/OpenRCPatch.sh
 
 
