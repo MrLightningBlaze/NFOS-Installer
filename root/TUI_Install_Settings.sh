@@ -67,9 +67,9 @@ function FullDriveInstall #Install To Entire Drive
         read -r -p "Please enter a disk to install to: " drive
         drive="/dev/$drive"
         if [ -b "$drive" ]; then
-            SetSettings drive #Save drive in settings file
             bootDrive="$drive"1
             rootDrive="$drive"2
+            SetSettings drive #Save drive in settings file
             SetSettings rootDrive #Save rootDrive in settings file
             SetSettings bootDrive #Save bootDrive  in settings file
             echo
