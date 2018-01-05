@@ -206,8 +206,8 @@ SetSettings timezone #Save timezone in settings file
 clear
 
 ## Ask User about Extra Scripts ##
-YesNo "Do you wish to install one of the Custom Application Packages (Gaming/Office/Developing/Etc)? [y/N]" "AppPackages=true" "AppPackages=false"
-YesNo "Do you wish to replace Systemd with OpenRC? [y/N]" "OpenRC=true" "OpenRC=false"
+YesNo "Do you wish to install one of the Custom Application Packages (Gaming/Office/Developing/Etc)? [y/N]" "export AppPackages=true" "export AppPackages=false"
+YesNo "Do you wish to replace Systemd with OpenRC? [y/N]" "export OpenRC=true" "export OpenRC=false"
 SetSettings AppPackages
 SetSettings OpenRC
 

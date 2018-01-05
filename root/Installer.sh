@@ -67,6 +67,7 @@ arch-chroot $mountpoint passwd "$username"
 mkdir "$mountpoint"/NFOS-Data
 mkdir "$mountpoint"/NFOS-Scripts
 cp /root/Data/settings.sh "$mountpoint"/NFOS-Data/settings.sh
+cp /root/Data/Configs/pacman.conf "$mountpoint"/NFOS-Data/pacman.conf
 cp -r /root/NFOS-Scripts/* "$mountpoint"/NFOS-Scripts/
 
 #Install Pacaur
