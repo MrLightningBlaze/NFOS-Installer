@@ -53,6 +53,12 @@ function YesNo ##Function for dynamic Yes/No options
     esac
 }
 
+
+function SetSettings
+{
+    sed -i "/^$1=/c\\$1=\"$(eval echo \${$1})\"" /root/Data/settings.sh
+}
+
 function FullDriveInstall #Install To Entire Drive
 {
     while true #Ask user to select drive
@@ -61,11 +67,11 @@ function FullDriveInstall #Install To Entire Drive
         read -r -p "Please enter a disk to install to: " drive
         drive="/dev/$drive"
         if [ -b "$drive" ]; then
-            echo drive=$drive >> /root/Data/settings.sh
-            echo bootDrive="$drive"1 >> /root/Data/settings.sh
-            echo rootDrive="$drive"2 >> /root/Data/settings.sh
+            SetSettings drive #Save drive in settings file
             bootDrive="$drive"1
             rootDrive="$drive"2
+            SetSettings rootDrive #Save rootDrive in settings file
+            SetSettings bootDrive #Save bootDrive  in settings file
             echo
             read -r -p "The drive $drive will be wiped, are you sure? [y/N]" response #Confirm the settings with the user
             case "$response" in
@@ -122,7 +128,6 @@ function ManualPartInstall #Manually Choose Paritions
         fi
     done
 }
-
 
 ##Get User Settings##
 PrintNFIcon
@@ -193,12 +198,12 @@ do
     esac
 done
 
-echo "username=$username" >> /root/Data/settings.sh
-echo "hostname=$hostname" >> /root/Data/settings.sh
+SetSettings username #Save username in settings file
+SetSettings hostname #Save hostname in settings file
 echo
 echo
 timezone=$(tzselect) #Set User Timezone
-echo "timezone=$timezone" >> /root/Data/settings.sh
+SetSettings timezone #Save timezone in settings file
 clear
 
 ##Main Install##
