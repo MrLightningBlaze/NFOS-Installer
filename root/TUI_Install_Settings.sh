@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ###########################
-#NFOS Install Script      #
+#NFOS Install Settings    #
 #Written By LBlaze        #
 ###########################
 
@@ -67,22 +67,17 @@ function FullDriveInstall #Install To Entire Drive
         read -r -p "Please enter a disk to install to: " drive
         drive="/dev/$drive"
         if [ -b "$drive" ]; then
-            SetSettings drive #Save drive in settings file
             bootDrive="$drive"1
             rootDrive="$drive"2
-            SetSettings rootDrive #Save rootDrive in settings file
-            SetSettings bootDrive #Save bootDrive  in settings file
+            fullDrive=true
             echo
             read -r -p "The drive $drive will be wiped, are you sure? [y/N]" response #Confirm the settings with the user
             case "$response" in
                 [yY][eE][sS]|[yY])
-                    if [ -d /sys/firmware/efi ]
-                    then
-                        echo -e "o\nn\n\n\n\n+1G\nn\n\n\n\n\nt\n1\nef\nw" | fdisk $drive #Partition the Disk
-                    else
-                        echo -e "o\nn\n\n\n\n+1G\nn\n\n\n\n\nw" | fdisk $drive #Partition the Disk
-                    fi
-
+                        SetSettings fullDrive #Save drive settings
+                        SetSettings drive 
+                        SetSettings rootDrive 
+                        SetSettings bootDrive 
                     break
                     ;;
                 *)
@@ -105,11 +100,15 @@ function ManualPartInstall #Manually Choose Paritions
         read -r -p "Please select your EFI partition: " bootDrive
         rootDrive=/dev/"$rootDrive"
         bootDrive=/dev/"$bootDrive"
+        fullDrive=false
         if [ -b "$rootDrive" ]; then
             if [ -b "$bootDrive" ]; then
                 read -r -p "$rootDrive will be used as root and $bootDrive will be used as Boot, are you sure? [y/N]" response #Confirm the settings with the user
                 case "$response" in
                     [yY][eE][sS]|[yY])
+                        SetSettings fullDrive #Save drive settings
+                        SetSettings rootDrive 
+                        SetSettings bootDrive 
                         break
                         ;;
                     *)
@@ -138,7 +137,7 @@ echo "Afterward the installer will run, and install your OS"
 echo 
 echo
 
-YesNo "Are you using Wifi? [y/N]" "wifi-menu" "dhcpcd"
+YesNo "Are you using Wifi? [y/N]" "wifi-menu" "dhcpcd -q"
 
 while true
 do
@@ -206,74 +205,16 @@ timezone=$(tzselect) #Set User Timezone
 SetSettings timezone #Save timezone in settings file
 clear
 
-##Main Install##
-timedatectl set-ntp true #Enable Network Time
-mkfs.fat -F32 "$bootDrive" #Format Boot Partition
-mkfs.ext4 "$rootDrive" #Format Root Partition
-mount "$rootDrive" "$mountpoint" #Mount Root Partition
-mkdir "$mountpoint"/boot #Create Boot Mountpoint
-mount "$bootDrive" "$mountpoint"/boot #Mount Boot Partition
-pacstrap "$mountpoint" base base-devel #Install Core System
-genfstab -U "$mountpoint" >> "$mountpoint"/etc/fstab #Generate the fstab
-echo "LANG=$langfile" >> "$mountpoint"/etc/locale.conf
-echo "$hostname" >> "$mountpoint"/etc/hostname #Set The Hostname
+## Ask User about Extra Scripts ##
+YesNo "Do you wish to install one of the Custom Application Packages (Gaming/Office/Developing/Etc)? [y/N]" "export AppPackages=true" "export AppPackages=false"
+YesNo "Do you wish to replace Systemd with OpenRC? [y/N]" "export OpenRC=true" "export OpenRC=false"
+SetSettings AppPackages
+SetSettings OpenRC
 
-
-##Chroot Setup##
-arch-chroot "$mountpoint" ln -sf /usr/share/zoneinfo/"$timezone" /etc/localtime #Set the timezone
-arch-chroot "$mountpoint" hwclock --systohc #Set the hardware clock to UTC
-arch-chroot "$mountpoint" locale-gen #Generate Locales
-arch-chroot "$mountpoint" pacman -S "$coreStuff" "$networkStuff" "$xorgDesktop" "$defaultApps" --noconfirm
-
-if [ -d /sys/firmware/efi ]
-then
-    arch-chroot "$mountpoint" grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub #Install Grub to System
-else
-    arch-chroot "$mountpoint" grub-install --target=i386-pc ${bootDrive::-1}
-fi
-
-arch-chroot "$mountpoint" grub-mkconfig -o /boot/grub/grub.cfg #Configure Grub
-arch-chroot "$mountpoint" useradd -m -G wheel -s /bin/bash "$username" #Create User
-arch-chroot "$mountpoint" systemctl enable dhcpcd
-arch-chroot "$mountpoint" systemctl enable lxdm
-echo "%wheel ALL=(ALL) ALL" >> "$mountpoint"/etc/sudoers
-echo "%root ALL=(ALL:ALL) ALL" >> "$mountpoint"/etc/sudoers
-echo "[multilib]" >> "$mountpoint"/etc/pacman.conf
-echo "Include = /etc/pacman.d/mirrorlist" >> "$mountpoint"/etc/pacman.conf
-arch-chroot "$mountpoint" pacman -Syy --noconfirm
-clear
-
-
-##Final User Config##
-read -n 1 -s -r -p "Note: User interaction required. Press any key to continue" #Ask User For Passwords
-echo
-echo "You will now be asked for the password for \"root\""
-arch-chroot "$mountpoint" passwd
-echo "You will now be asked for the password for \"$username\""
-arch-chroot "$mountpoint" passwd "$username"
-
-## Run post-Install Scripts ##
-#Copy Scripts
-mkdir "$mountpoint"/NFOS-Data
-mkdir "$mountpoint"/NFOS-Scripts
-cp /root/Data/settings.sh "$mountpoint"/NFOS-Data/settings.sh
-cp -r /root/NFOS-Scripts/* "$mountpoint"/NFOS-Scripts/
-cp /root/Data/Configs/* "$mountpoint"/NFOS-Data/
-
-#Install Pacaur
-arch-chroot "$mountpoint" /NFOS-Scripts/pacaurInstall.sh
-rm "$mountpoint"/NFOS-Scripts/pacaurInstall.sh
-
-#Run Application Package Installer
-YesNo "Do you wish to install one of the Custom Application Packages (Gaming/Office/Developing/Etc)? [y/N]" "arch-chroot $mountpoint /NFOS-Scripts/ApplicationPackages.sh" ""
-rm "$mountpoint"/NFOS-Scripts/ApplicationPackages.sh
-
-YesNo "Do you wish to replace Systemd with OpenRC? [y/N]" "arch-chroot $mountpoint /NFOS-Scripts/OpenRCPatch.sh" ""
-rm "$mountpoint"/NFOS-Scripts/OpenRCPatch.sh
-
+## Run Actual Install ##
+/root/Installer.sh
 
 ##Cleanup## 
 umount "$bootDrive" #Unmount Boot Drive
 umount "$rootDrive" #Unmount Root Drive
-sync #Sync data to disks
 reboot

@@ -30,5 +30,5 @@ automated_script ()
 }
 
 if [[ $(tty) == "/dev/tty1" ]]; then
-    /root/NFOSInstall.sh
+    /root/TUI_Install_Settings.sh
 fi
