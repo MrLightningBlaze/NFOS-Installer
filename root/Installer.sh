@@ -5,108 +5,17 @@
 #Written By LBlaze        #
 ###########################
 
-#TODO Support Other Keyboard Layouts
-#TODO Better Lang Selector
-#TODO Theme Installation
-
 source /root/Data/settings.sh
 
-#### DEV ONLY SETTINGS######
-coreStuff="grub efibootmgr sudo"
-networkStuff="dhcpcd networkmanager network-manager-applet"
-xorgDesktop="xorg-server xorg-drivers xfce4 lxdm"
-defaultApps=""
 
-
-function YesNo ##Function for dynamic Yes/No options
-{
-    read -r -p "$1" askresult #Ask User Yes/No
-    case "$askresult" in
-        [yY][eE][sS]|[yY]) 
-            $2
-            ;;
-        *)
-            $3
-            ;;
-    esac
-}
-
-function FullDriveInstall #Install To Entire Drive
-{
-    while true #Ask user to select drive
-    do
-        lsblk --output NAME,SIZE -d |grep "sd[a-z]"
-        read -r -p "Please enter a disk to install to: " drive
-        drive="/dev/$drive"
-        if [ -b "$drive" ]; then
-            echo drive=$drive >> /root/Data/settings.sh
-            echo bootDrive="$drive"1 >> /root/Data/settings.sh
-            echo rootDrive="$drive"2 >> /root/Data/settings.sh
-            bootDrive="$drive"1
-            rootDrive="$drive"2
-            echo
-            read -r -p "The drive $drive will be wiped, are you sure? [y/N]" response #Confirm the settings with the user
-            case "$response" in
-                [yY][eE][sS]|[yY])
-                    if [ -d /sys/firmware/efi ]
-                    then
-                        echo -e "o\nn\n\n\n\n+1G\nn\n\n\n\n\nt\n1\nef\nw" | fdisk $drive #Partition the Disk
-                    else
-                        echo -e "o\nn\n\n\n\n+1G\nn\n\n\n\n\nw" | fdisk $drive #Partition the Disk
-                    fi
-
-                    break
-                    ;;
-                *)
-                    exit 1
-                    ;;
-            esac
-        fi
-        clear
-        echo "ERROR: That Drive does not exist"
-        echo
-    done
-}
-
-function ManualPartInstall #Manually Choose Paritions
-{
-    while true #Ask user to select drive
-    do
-        lsblk --output NAME,SIZE |grep "sd[a-z]"
-        read -r -p "Please select your root partition: " rootDrive
-        read -r -p "Please select your EFI partition: " bootDrive
-        rootDrive=/dev/"$rootDrive"
-        bootDrive=/dev/"$bootDrive"
-        if [ -b "$rootDrive" ]; then
-            if [ -b "$bootDrive" ]; then
-                read -r -p "$rootDrive will be used as root and $bootDrive will be used as Boot, are you sure? [y/N]" response #Confirm the settings with the user
-                case "$response" in
-                    [yY][eE][sS]|[yY])
-                        break
-                        ;;
-                    *)
-                        exit 1
-                        ;;
-                esac
-            else
-                clear
-                echo "ERROR: Boot Partition does not exist ($bootDrive)"
-                echo
-            fi 
-        else
-            clear
-            echo "ERROR: Root Partition does not exist ($rootDrive)"
-            echo
-        fi
-    done
-}
-
-
-##Get User Settings##
-
-dhcpcd
-FullDriveInstall
-clear
+#TODO Partition drive if its full drive install
+if $fullDrive; then
+    if [ -d /sys/firmware/efi ]; then
+        echo -e "o\nn\n\n\n\n+1G\nn\n\n\n\n\nt\n1\nef\nw" | fdisk $drive #Partition the Disk
+    else
+        echo -e "o\nn\n\n\n\n+1G\nn\n\n\n\n\nw" | fdisk $drive #Partition the Disk
+    fi
+fi
 
 ##Main Install##
 timedatectl set-ntp true #Enable Network Time
@@ -170,12 +79,10 @@ if $AppPackages; then
 fi
 rm "$mountpoint"/NFOS-Scripts/ApplicationPackages.sh
 
-
 if $OpenRC; then
     arch-chroot $mountpoint /NFOS-Scripts/OpenRCPatch.sh
 fi
 rm "$mountpoint"/NFOS-Scripts/OpenRCPatch.sh
-
 
 ##Cleanup##
 sync #Sync data to disks

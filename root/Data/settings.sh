@@ -17,6 +17,7 @@ timezone="GMT"
 
 ##Drive Settings
 mountpoint="/mnt"
+fullDrive=""
 drive=""
 bootDrive=""
 rootDrive=""
