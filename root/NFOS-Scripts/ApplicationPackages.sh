@@ -24,6 +24,7 @@ function YesNo ##Function for dynamic Yes/No options
 
 sudo -u $username gpg --recv-keys --keyserver hkp://pgp.mit.edu 1EB2638FF56C0C53
 sudo -u $username gpg --recv-keys --keyserver hkp://pgp.mit.edu 0FC3042E345AD05D
+sudo -u $username gpg --recv-keys --keyserver hkp://pgp.mit.edu 8F0871F202119294 
 
 YesNo "Do you wish to install the Gaming Package? [y/N] " "packagesToInstall=\"$packagesToInstall $gamingPackage\"" ""
 YesNo "Do you wish to install the Office Package? [y/N] " "packagesToInstall=\"$packagesToInstall $officePackage\"" ""
