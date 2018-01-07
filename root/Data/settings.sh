@@ -23,7 +23,7 @@ bootDrive=""
 rootDrive=""
 
 ##Application Packages
-coreStuff="grub efibootmgr sudo"
+coreStuff="grub efibootmgr sudo os-prober"
 networkStuff="iw wpa_supplicant dialog dhcpcd networkmanager network-manager-applet"
 xorgDesktop="xorg-server xorg-drivers xfce4 lxdm pulseaudio pulseaudio-alsa"
 defaultApps="firefox rxvt-unicode gedit pavucontrol"
