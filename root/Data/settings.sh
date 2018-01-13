@@ -32,8 +32,8 @@ officePackage="libreoffice thunderbird"
 
 ## OpenRC Stuff ##
 openRCPackages="base base-devel openrc-system grub linux-lts linux-lts-headers systemd-dummy libsystemd-dummy openrc-world openrc netifrc mkinitcpio"
-openRCServicePackages="acpid-openrc alsa-utils-openrc autofs-openrc displaymanager-openrc fuse-openrc haveged-openrc hdparm-openrc syslog-ng-openrc"
-openRCServices="acpid alsasound autofs xdm fuse haveged hdparm syslog-ng dbus"
+openRCServicePackages="acpid-openrc alsa-utils-openrc autofs-openrc displaymanager-openrc fuse-openrc haveged-openrc hdparm-openrc syslog-ng-openrc ntp-openrc"
+openRCServices="acpid alsasound autofs xdm fuse haveged hdparm syslog-ng dbus ntpd"
 
 ## Automated Install Stuff ##
 AppPackages=false
