@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ###########################
-#NFOS Install Settings    #
+#Install Settings    #
 #Written By LBlaze        #
 ###########################
 
