@@ -12,33 +12,6 @@
 source /root/Data/settings.sh
 
 ##Functions##
-function PrintNFIcon ##Prints Out The Logo
-{
-    echo -e '                        `.--::///////::-.`                             '
-    echo -e '                 `-/+shdmNNNNMMMMMMMMMNNNmmhs+:.`                      '
-    echo -e '             .:ohmNMMMMMMMMMMMMMMMMMMMMMMMMMMMMNmy+-`                  '
-    echo -e '          .+hNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNdo-                '
-    echo -e '         +NMMMMMMMMMMMMMMMMMMMMMMMMMMMMMdyso++++ossydmmd+`             '
-    echo -e '       `+NMMMMMMMMMMMMMMMMMMMMMMMMMMMMMh-`          ``.-/+-            '
-    echo -e '     `:hMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNmhs+-./-         `            '
-    echo -e '    `-omMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNmdNy-                    '
-    echo -e '       oMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNs`                  '
-    echo -e '      `dMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMd+`                '
-    echo -e '     `yMMMMMMMMMMNMMMMMMMMMMMMMMMMMMdyo+/::/+shmNMMooNd:               '
-    echo -e '    .sho/+NMMMMmoyMMMMMMMMMMMMMMd++++oosyyso/-..-/ydhNMm`              '
-    echo -e '   ./-    yMMMy..NMMMMMMMMMMMMN+`    `  `.-/sddho-`.:ymm.              '
-    echo -e '   `      hMm/` yMMMMMMMMMMMMN:    .os:::///.`-+dNd+` ..               '
-    echo -e '         `Nd-  :MMMMMMMMMMMMmoo+::smMMMMMMMM/.` `/mMh-                 '
-    echo -e '         oy`  `dMMMMMMMMMMMM+  `.:+ymNMMMMNNNmhs/--mMd`                '
-    echo -e '        `+`   /ymMMMMMMMMMMM+       `-/ys:---::/+ssmMM/                '
-    echo -e '        .     . -MMMMMMMMMMMd`                   `oMMNy:`              '
-    echo -e '                 mMMMMMMMMMMMd:`               `:hMMN+`--              '
-    echo -e '                 ymshNMMMMMMMMMdo-.`       ``-+hNMMm/                  '
-    echo -e '                 //  -yNMMMMMMMMMMNdhysssyhdmMMMNm+`                   '
-    echo -e '                 ``    .+hNMMMMMMMMMMMMMMMMMNNds:`                     '
-    echo -e '                          .:oydNNNNNNNNNmhs+:.                         '
-    echo -e '                               ``.---.``                               '
-}
 
 function YesNo ##Function for dynamic Yes/No options
 {
@@ -129,9 +102,8 @@ function ManualPartInstall #Manually Choose Paritions
 }
 
 ##Get User Settings##
-PrintNFIcon
 echo
-echo "Welcome to the NightFury OS Installer!"
+echo "Welcome to the Installer!"
 echo "You will be asked for several settings before the installer begins"
 echo "Afterward the installer will run, and install your OS"
 echo 
